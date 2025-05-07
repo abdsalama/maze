@@ -37,6 +37,12 @@ class Button:
         # Store whether we're using Bresenham
         self.use_bresenham = use_bresenham
 
+        # Track if this button is selected
+        self.is_selected = False
+
+        # Highlight border (will be created when needed)
+        self.highlight_border = None
+
     def draw(self):
         self.rect.draw(self.win)
         self.label.draw(self.win)
@@ -44,6 +50,8 @@ class Button:
     def undraw(self):
         self.rect.undraw()
         self.label.undraw()
+        if self.highlight_border:
+            self.highlight_border.undraw()
 
     def clicked(self, p):
         return self.x1 <= p.getX() <= self.x2 and self.y1 <= p.getY() <= self.y2
@@ -53,6 +61,34 @@ class Button:
 
     def setWidth(self, width):
         self.rect.setWidth(width)
+
+    def setOutline(self, color):
+        self.rect.setOutline(color)
+
+    def setSelected(self, selected=True):
+        """Highlight the button as selected with a distinctive border"""
+        self.is_selected = selected
+
+        # Remove existing highlight if any
+        if self.highlight_border:
+            self.highlight_border.undraw()
+            self.highlight_border = None
+
+        if selected and self.win:
+            # Create a new rectangle slightly larger than the button for the highlight
+            highlight_x1 = self.x1 - 3
+            highlight_y1 = self.y1 - 3
+            highlight_x2 = self.x2 + 3
+            highlight_y2 = self.y2 + 3
+
+            # Create a visible highlight border
+            self.highlight_border = Rectangle(
+                Point(highlight_x1, highlight_y1),
+                Point(highlight_x2, highlight_y2)
+            )
+            self.highlight_border.setOutline("#FFD700")  # Gold color
+            self.highlight_border.setWidth(3)
+            self.highlight_border.draw(self.win)
 
 
 def welcome_screen():
@@ -157,33 +193,44 @@ def settings_screen():
     back_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 400), 150, 50, "Back", use_bresenham=True)
     back_btn.draw()
 
-    # Set initial selections
-    medium_btn.rect.setWidth(3)
+    # Set initial selections based on current settings
+    if GameConfig.DIFFICULTY == "easy":
+        easy_btn.setSelected(True)
+    elif GameConfig.DIFFICULTY == "medium":
+        medium_btn.setSelected(True)
+    elif GameConfig.DIFFICULTY == "hard":
+        hard_btn.setSelected(True)
+
+    # Set initial color selection
+    for btn, color in color_buttons:
+        if color == GameConfig.PLAYER_COLOR:
+            btn.setSelected(True)
+            break
 
     # Wait for clicks
     while True:
         pt = win.getMouse()
 
         if easy_btn.clicked(pt):
-            easy_btn.rect.setWidth(3)
-            medium_btn.rect.setWidth(1)
-            hard_btn.rect.setWidth(1)
+            easy_btn.setSelected()
+            medium_btn.setSelected(False)
+            hard_btn.setSelected(False)
             GameConfig.DIFFICULTY = "easy"
             GameConfig.CELL_SIZE = 50  # Larger cells for easy mode
             GameConfig.COIN_COUNT = 5
 
         elif medium_btn.clicked(pt):
-            easy_btn.rect.setWidth(1)
-            medium_btn.rect.setWidth(3)
-            hard_btn.rect.setWidth(1)
+            easy_btn.setSelected(False)
+            medium_btn.setSelected()
+            hard_btn.setSelected(False)
             GameConfig.DIFFICULTY = "medium"
             GameConfig.CELL_SIZE = 40  # Default size
             GameConfig.COIN_COUNT = 10
 
         elif hard_btn.clicked(pt):
-            easy_btn.rect.setWidth(1)
-            medium_btn.rect.setWidth(1)
-            hard_btn.rect.setWidth(3)
+            easy_btn.setSelected(False)
+            medium_btn.setSelected(False)
+            hard_btn.setSelected()
             GameConfig.DIFFICULTY = "hard"
             GameConfig.CELL_SIZE = 30  # Smaller cells for hard mode
             GameConfig.COIN_COUNT = 15
@@ -194,8 +241,8 @@ def settings_screen():
 
                 # Highlight selected color button
                 for b, _ in color_buttons:
-                    b.rect.setWidth(1)
-                btn.rect.setWidth(3)
+                    b.setSelected(False)
+                btn.setSelected()
 
         if back_btn.clicked(pt):
             win.close()
