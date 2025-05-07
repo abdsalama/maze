@@ -435,17 +435,17 @@ def main():
             player = Player(maze)
             player.draw()
 
-            # Settings button in game with Bresenham rectangle border
-            settings_btn = Button(
+            # Exit button in game with Bresenham rectangle border
+            exit_btn = Button(
                 maze.window,
                 Point(GameConfig.WINDOW_WIDTH - 60, 20),
                 100,
                 30,
-                "Settings",
+                "Exit",
                 use_bresenham=True
             )
-            settings_btn.rect.setFill("lightblue")
-            settings_btn.draw()
+            exit_btn.rect.setFill("salmon")  # Red color for exit button
+            exit_btn.draw()
 
             # Game loop
             is_game_over = False
@@ -455,13 +455,12 @@ def main():
                 # Check for mouse clicks
                 pt = maze.window.checkMouse()
                 if pt:
-                    if settings_btn.clicked(pt):
-                        pause_result = pause_screen(maze.window)
-                        if pause_result == "exit":
-                            is_game_over = True
-                            maze.window.close()
-                            action = welcome_screen()
-                            break
+                    if exit_btn.clicked(pt):
+                        # Exit directly to welcome screen
+                        is_game_over = True
+                        maze.window.close()
+                        action = welcome_screen()
+                        break
 
                 # Check for key press
                 key = maze.window.checkKey()
