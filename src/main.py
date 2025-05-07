@@ -1,15 +1,15 @@
 from graphics import *
 from maze import Maze
 from player import Player
-from effects import Effects
 from config import GameConfig
+from drawing_utils import BresenhamRectangle
 import time
 import random
 
 
 
 class Button:
-    def __init__(self, win, center, width, height, label):
+    def __init__(self, win, center, width, height, label, use_bresenham=True):
         self.win = win
         self.center = center
         self.width = width
@@ -20,12 +20,22 @@ class Button:
         self.y1 = center.getY() - height / 2
         self.y2 = center.getY() + height / 2
 
-        self.rect = Rectangle(Point(self.x1, self.y1), Point(self.x2, self.y2))
-        self.rect.setFill("lightgray")
-        self.rect.setOutline("black")
+        # Use Bresenham algorithm for rectangle border if specified
+        if use_bresenham:
+            self.rect = BresenhamRectangle(Point(self.x1, self.y1), Point(self.x2, self.y2))
+            self.rect.setFill("lightgray")
+            self.rect.setOutline("black")
+            self.rect.setWidth(2)  # Make the border more visible
+        else:
+            self.rect = Rectangle(Point(self.x1, self.y1), Point(self.x2, self.y2))
+            self.rect.setFill("lightgray")
+            self.rect.setOutline("black")
 
         self.label = Text(center, label)
         self.label.setSize(12)
+
+        # Store whether we're using Bresenham
+        self.use_bresenham = use_bresenham
 
     def draw(self):
         self.rect.draw(self.win)
@@ -40,6 +50,9 @@ class Button:
 
     def setFill(self, color):
         self.rect.setFill(color)
+
+    def setWidth(self, width):
+        self.rect.setWidth(width)
 
 
 def welcome_screen():
@@ -62,22 +75,22 @@ def welcome_screen():
     welcome.setSize(14)
     welcome.draw(win)
 
-    # Start button
+    # Start button with Bresenham rectangle border
     start_btn = Button(
-        win, Point(GameConfig.WINDOW_WIDTH / 2, 250), 150, 50, "Start Game"
+        win, Point(GameConfig.WINDOW_WIDTH / 2, 250), 150, 50, "Start Game", use_bresenham=True
     )
     start_btn.rect.setFill("lightgreen")
     start_btn.draw()
 
-    # Settings button
+    # Settings button with Bresenham rectangle border
     settings_btn = Button(
-        win, Point(GameConfig.WINDOW_WIDTH / 2, 320), 150, 50, "Settings"
+        win, Point(GameConfig.WINDOW_WIDTH / 2, 320), 150, 50, "Settings", use_bresenham=True
     )
     settings_btn.rect.setFill("lightblue")
     settings_btn.draw()
 
-    # Exit button
-    exit_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 390), 150, 50, "Exit")
+    # Exit button with Bresenham rectangle border
+    exit_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 390), 150, 50, "Exit", use_bresenham=True)
     exit_btn.rect.setFill("salmon")
     exit_btn.draw()
 
@@ -112,15 +125,16 @@ def settings_screen():
     diff_text.setSize(16)
     diff_text.draw(win)
 
-    easy_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 4, 180), 120, 40, "Easy")
+    # Create buttons with Bresenham rectangle borders
+    easy_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 4, 180), 120, 40, "Easy", use_bresenham=True)
     easy_btn.rect.setFill("lightgreen")
     easy_btn.draw()
 
-    medium_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 180), 120, 40, "Medium")
+    medium_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 180), 120, 40, "Medium", use_bresenham=True)
     medium_btn.rect.setFill("yellow")
     medium_btn.draw()
 
-    hard_btn = Button(win, Point(3 * GameConfig.WINDOW_WIDTH / 4, 180), 120, 40, "Hard")
+    hard_btn = Button(win, Point(3 * GameConfig.WINDOW_WIDTH / 4, 180), 120, 40, "Hard", use_bresenham=True)
     hard_btn.rect.setFill("salmon")
     hard_btn.draw()
 
@@ -134,18 +148,14 @@ def settings_screen():
 
     for i, color in enumerate(colors):
         x_pos = (i + 1) * GameConfig.WINDOW_WIDTH / (len(colors) + 1)
-        color_btn = Button(win, Point(x_pos, 300), 80, 40, "")
+        color_btn = Button(win, Point(x_pos, 300), 80, 40, "", use_bresenham=True)
         color_btn.rect.setFill(color)
         color_btn.draw()
         color_buttons.append((color_btn, color))
 
-    # Back button
-    back_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 400), 150, 50, "Back")
+    # Back button with Bresenham rectangle border
+    back_btn = Button(win, Point(GameConfig.WINDOW_WIDTH / 2, 400), 150, 50, "Back", use_bresenham=True)
     back_btn.draw()
-
-    # Default settings
-    difficulty = "medium"
-    player_color = "blue"
 
     # Set initial selections
     medium_btn.rect.setWidth(3)
@@ -155,7 +165,6 @@ def settings_screen():
         pt = win.getMouse()
 
         if easy_btn.clicked(pt):
-            difficulty = "easy"
             easy_btn.rect.setWidth(3)
             medium_btn.rect.setWidth(1)
             hard_btn.rect.setWidth(1)
@@ -164,7 +173,6 @@ def settings_screen():
             GameConfig.COIN_COUNT = 5
 
         elif medium_btn.clicked(pt):
-            difficulty = "medium"
             easy_btn.rect.setWidth(1)
             medium_btn.rect.setWidth(3)
             hard_btn.rect.setWidth(1)
@@ -173,7 +181,6 @@ def settings_screen():
             GameConfig.COIN_COUNT = 10
 
         elif hard_btn.clicked(pt):
-            difficulty = "hard"
             easy_btn.rect.setWidth(1)
             medium_btn.rect.setWidth(1)
             hard_btn.rect.setWidth(3)
@@ -183,7 +190,6 @@ def settings_screen():
 
         for btn, color in color_buttons:
             if btn.clicked(pt):
-                player_color = color
                 GameConfig.PLAYER_COLOR = color
 
                 # Highlight selected color button
@@ -208,8 +214,8 @@ def win_screen(score, elapsed_time):
     win_text.setTextColor("#2E8B57")  # Sea green color
     win_text.draw(win)
 
-    # Score and time display
-    stats_bg = Rectangle(
+    # Score and time display with Bresenham rectangle border
+    stats_bg = BresenhamRectangle(
         Point(GameConfig.WINDOW_WIDTH / 2 - 200, 150),
         Point(GameConfig.WINDOW_WIDTH / 2 + 200, 250),
     )
@@ -227,9 +233,9 @@ def win_screen(score, elapsed_time):
     stats.setTextColor("#333333")  # Dark gray text
     stats.draw(win)
 
-    # Buttons
+    # Buttons with Bresenham rectangle borders
     restart_btn = Button(
-        win, Point(GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "🔄 Play Again"
+        win, Point(GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "🔄 Play Again", use_bresenham=True
     )
     restart_btn.rect.setFill("#90EE90")  # Light green
     restart_btn.label.setSize(14)
@@ -237,7 +243,7 @@ def win_screen(score, elapsed_time):
     restart_btn.draw()
 
     exit_btn = Button(
-        win, Point(2 * GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "❌ Exit"
+        win, Point(2 * GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "❌ Exit", use_bresenham=True
     )
     exit_btn.rect.setFill("#FF7F7F")  # Light red
     exit_btn.label.setSize(14)
@@ -275,13 +281,14 @@ def pause_screen(maze_window):
     overlay.setWidth(0)
     overlay.draw(maze_window)
 
-    # Pause menu
-    menu_bg = Rectangle(
+    # Pause menu with Bresenham rectangle border
+    menu_bg = BresenhamRectangle(
         Point(GameConfig.WINDOW_WIDTH / 2 - 150, GameConfig.WINDOW_HEIGHT / 2 - 150),
         Point(GameConfig.WINDOW_WIDTH / 2 + 150, GameConfig.WINDOW_HEIGHT / 2 + 150),
     )
     menu_bg.setFill("white")
     menu_bg.setOutline("black")
+    menu_bg.setWidth(2)  # Make the border more visible
     menu_bg.draw(maze_window)
 
     # Title
@@ -293,14 +300,16 @@ def pause_screen(maze_window):
     pause_text.setStyle("bold")
     pause_text.draw(maze_window)
 
-    # Buttons
+    # Buttons with Bresenham rectangle borders
     resume_btn = Button(
         maze_window,
         Point(GameConfig.WINDOW_WIDTH / 2, GameConfig.WINDOW_HEIGHT / 2 - 30),
         200,
         40,
         "Resume",
+        use_bresenham=True
     )
+    resume_btn.rect.setFill("lightgreen")
     resume_btn.draw()
 
     settings_btn = Button(
@@ -309,7 +318,9 @@ def pause_screen(maze_window):
         200,
         40,
         "Settings",
+        use_bresenham=True
     )
+    settings_btn.rect.setFill("lightblue")
     settings_btn.draw()
 
     exit_btn = Button(
@@ -318,7 +329,9 @@ def pause_screen(maze_window):
         200,
         40,
         "Exit",
+        use_bresenham=True
     )
+    exit_btn.rect.setFill("salmon")
     exit_btn.draw()
 
     # Wait for click
@@ -375,16 +388,16 @@ def main():
             player = Player(maze)
             player.draw()
 
-            effects = Effects()
-
-            # Settings button in game
+            # Settings button in game with Bresenham rectangle border
             settings_btn = Button(
                 maze.window,
                 Point(GameConfig.WINDOW_WIDTH - 60, 20),
                 100,
                 30,
                 "Settings",
+                use_bresenham=True
             )
+            settings_btn.rect.setFill("lightblue")
             settings_btn.draw()
 
             # Game loop

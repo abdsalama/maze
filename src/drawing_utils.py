@@ -1,4 +1,5 @@
 from graphics import *
+import math
 
 def draw_midpoint_circle(window, center_x, center_y, radius, fill_color, outline_color=None, width=1):
     """
@@ -223,3 +224,234 @@ class MidpointCircle:
             self.draw(canvas)
 
         return self
+
+
+def draw_bresenham_line(window, x1, y1, x2, y2, color, width=1):
+    """
+    Draw a line using the Bresenham line algorithm.
+
+    Args:
+        window: The GraphWin window to draw on
+        x1, y1: The starting point coordinates
+        x2, y2: The ending point coordinates
+        color: The color of the line
+        width: The width of the line
+
+    Returns:
+        A list of all the points/pixels that make up the line
+    """
+    # Initialize list to store all points
+    points = []
+
+    # Calculate differences
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+
+    # Determine direction of movement
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
+
+    # Initial error
+    err = dx - dy
+
+    # Current position
+    x, y = x1, y1
+
+    # Bresenham algorithm
+    while True:
+        # Plot the current point
+        plot_point(window, x, y, color, width, points)
+
+        # Check if we've reached the end point
+        if x == x2 and y == y2:
+            break
+
+        # Calculate error for next step
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x += sx
+        if e2 < dx:
+            err += dx
+            y += sy
+
+    return points
+
+
+def draw_rectangle_border(window, x1, y1, x2, y2, color, width=1):
+    """
+    Draw a rectangle border using the Bresenham line algorithm.
+
+    Args:
+        window: The GraphWin window to draw on
+        x1, y1: The top-left corner coordinates
+        x2, y2: The bottom-right corner coordinates
+        color: The color of the border
+        width: The width of the border
+
+    Returns:
+        A list of all the points/pixels that make up the rectangle border
+    """
+    points = []
+
+    # Draw the four sides of the rectangle
+    points.extend(draw_bresenham_line(window, x1, y1, x2, y1, color, width))  # Top
+    points.extend(draw_bresenham_line(window, x2, y1, x2, y2, color, width))  # Right
+    points.extend(draw_bresenham_line(window, x2, y2, x1, y2, color, width))  # Bottom
+    points.extend(draw_bresenham_line(window, x1, y2, x1, y1, color, width))  # Left
+
+    return points
+
+
+class BresenhamLine:
+    """
+    A class to represent a line drawn using the Bresenham line algorithm.
+    This class mimics the interface of the Line class from graphics.py.
+    """
+
+    def __init__(self, point1, point2):
+        """
+        Initialize a new BresenhamLine.
+
+        Args:
+            point1: A Point object representing the start point of the line
+            point2: A Point object representing the end point of the line
+        """
+        self.point1 = point1
+        self.point2 = point2
+        self.color = "black"
+        self.width = 1
+        self.canvas = None
+        self.points = []
+
+    def draw(self, window):
+        """
+        Draw the line on the window.
+
+        Args:
+            window: The GraphWin window to draw on
+        """
+        self.canvas = window
+        self.points = draw_bresenham_line(
+            window,
+            self.point1.getX(),
+            self.point1.getY(),
+            self.point2.getX(),
+            self.point2.getY(),
+            self.color,
+            self.width
+        )
+        return self
+
+    def undraw(self):
+        """Remove the line from the window."""
+        if self.canvas:
+            for point in self.points:
+                point.undraw()
+            self.canvas = None
+
+    def setFill(self, color):
+        """Set the color of the line."""
+        self.color = color
+        return self
+
+    def setOutline(self, color):
+        """Set the color of the line (alias for setFill)."""
+        return self.setFill(color)
+
+    def setWidth(self, width):
+        """Set the width of the line."""
+        self.width = width
+        return self
+
+    def getP1(self):
+        """Return the start point of the line."""
+        return self.point1
+
+    def getP2(self):
+        """Return the end point of the line."""
+        return self.point2
+
+
+class BresenhamRectangle:
+    """
+    A class to represent a rectangle drawn using the Bresenham line algorithm.
+    This class mimics the interface of the Rectangle class from graphics.py.
+    """
+
+    def __init__(self, point1, point2):
+        """
+        Initialize a new BresenhamRectangle.
+
+        Args:
+            point1: A Point object representing the top-left corner of the rectangle
+            point2: A Point object representing the bottom-right corner of the rectangle
+        """
+        self.point1 = point1
+        self.point2 = point2
+        self.fill_color = None
+        self.outline_color = "black"
+        self.width = 1
+        self.canvas = None
+        self.points = []
+        self.fill_rectangle = None
+
+    def draw(self, window):
+        """
+        Draw the rectangle on the window.
+
+        Args:
+            window: The GraphWin window to draw on
+        """
+        self.canvas = window
+
+        # Draw fill if specified
+        if self.fill_color:
+            self.fill_rectangle = Rectangle(self.point1, self.point2)
+            self.fill_rectangle.setFill(self.fill_color)
+            self.fill_rectangle.setOutline(self.fill_color)
+            self.fill_rectangle.draw(window)
+
+        # Draw border using Bresenham lines
+        self.points = draw_rectangle_border(
+            window,
+            self.point1.getX(),
+            self.point1.getY(),
+            self.point2.getX(),
+            self.point2.getY(),
+            self.outline_color,
+            self.width
+        )
+        return self
+
+    def undraw(self):
+        """Remove the rectangle from the window."""
+        if self.canvas:
+            if self.fill_rectangle:
+                self.fill_rectangle.undraw()
+            for point in self.points:
+                point.undraw()
+            self.canvas = None
+
+    def setFill(self, color):
+        """Set the fill color of the rectangle."""
+        self.fill_color = color
+        return self
+
+    def setOutline(self, color):
+        """Set the outline color of the rectangle."""
+        self.outline_color = color
+        return self
+
+    def setWidth(self, width):
+        """Set the width of the outline."""
+        self.width = width
+        return self
+
+    def getP1(self):
+        """Return the top-left corner of the rectangle."""
+        return self.point1
+
+    def getP2(self):
+        """Return the bottom-right corner of the rectangle."""
+        return self.point2
