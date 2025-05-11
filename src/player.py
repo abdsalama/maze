@@ -23,15 +23,15 @@ class Player:
         return (1, 1)
 
     def draw(self):
-        """Draw the player character at the current position using midpoint circle algorithm"""
+        """Draw player using midpoint circle with 3D highlight."""
         x1 = self.x * self.cell_size
-        y1 = self.y * self.cell_size + self.ui_offset  # Add UI offset
+        y1 = self.y * self.cell_size + self.ui_offset
         center_x = x1 + self.cell_size / 2
         center_y = y1 + self.cell_size / 2
 
         # Only create and draw the character if it doesn't exist yet
         if self.character is None:
-            # Create player character with selected color using midpoint circle algorithm
+
             self.character = MidpointCircle(Point(center_x, center_y), self.cell_size / 3)
             self.character.setFill(self.color)
 
@@ -52,7 +52,7 @@ class Player:
             self.character.setOutline(outline)
             self.character.draw(self.maze.window)
 
-            # Add a small highlight to give 3D effect using midpoint circle algorithm
+
             self.highlight = MidpointCircle(Point(center_x - self.cell_size/8, center_y - self.cell_size/8),
                             self.cell_size/8)
             self.highlight.setFill("white")
@@ -60,11 +60,11 @@ class Player:
             self.highlight.setWidth(0)
             self.highlight.draw(self.maze.window)
         else:
-            # If character already exists, just move it to the current position
+
             self.move_character(center_x, center_y)
 
     def move_character(self, new_center_x, new_center_y):
-        """Move the player character to a new center position without redrawing"""
+        """Move player to new position without redrawing"""
         if self.character and self.highlight:
             # Calculate the movement delta
             current_center = self.character.getCenter()
@@ -76,7 +76,7 @@ class Player:
             self.highlight.move(dx, dy)
 
     def move(self, dx, dy):
-        """Move the player if the target cell is valid"""
+        """Move player if the target cell is valid"""
         new_x = self.x + dx
         new_y = self.y + dy
 
@@ -129,7 +129,7 @@ class Player:
         return False
 
     def handle_key(self, key):
-        """Handle keyboard input for player movement"""
+        """Process keyboard input for movement"""
         if key == "Up" or key == "w":
             return self.move(0, -1)
         elif key == "Down" or key == "s":
@@ -141,7 +141,7 @@ class Player:
         return False
 
     def set_color(self, color):
-        """Set the player's color"""
+        """Change the player's color"""
         if color in GameConfig.PLAYER_COLORS:
             self.color = color
             GameConfig.PLAYER_COLOR = color

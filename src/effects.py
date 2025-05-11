@@ -1,36 +1,20 @@
-import turtle
 import time
 import random
 import math
 from graphics import *
 from config import GameConfig
-from drawing_utils import MidpointCircle
+from drawing_utils import MidpointCircle, BresenhamLine
 
 class Effects:
     def __init__(self):
-        self.screen = None
         self.window = None
 
-    def init_turtle(self):
-        """Initialize turtle for effect animations"""
-        self.screen = turtle.Screen()
-        self.screen.setup(GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT)
-        self.screen.bgcolor("black")
-        self.screen.title("Game Victory!")
-
-        # Create turtle for drawing
-        self.t = turtle.Turtle()
-        self.t.hideturtle()
-        self.t.speed(0)
-
     def victory_effect(self):
-        """Display a victory animation using Turtle - kept for compatibility"""
-        # This is no longer the primary victory screen
-        # The main.py win_screen function handles the victory display
-        self._draw_simple_victory()
+        """Show victory animation with graphics library"""
+        self._draw_graphics_victory()
 
-    def _draw_simple_victory(self):
-        """Simple victory message for backward compatibility"""
+    def _draw_graphics_victory(self):
+        """Show victory message using graphics library"""
         self.window = GraphWin("Victory!", 400, 300)
         self.window.setBackground("black")
 
@@ -41,12 +25,39 @@ class Effects:
         msg.setStyle("bold")
         msg.draw(self.window)
 
+        # Add some graphical effects using our custom algorithms
+        self._add_victory_effects(self.window)
+
         # Wait and close
         time.sleep(3)
         self.window.close()
 
+    def _add_victory_effects(self, window):
+        """Add graphical effects to victory screen using graphics library"""
+        # Create sparkles around the text
+        for i in range(8):
+            angle = 2 * math.pi * i / 8
+            x = 200 + 100 * math.cos(angle)
+            y = 150 + 80 * math.sin(angle)
+
+            # Create sparkle using MidpointCircle
+            sparkle = MidpointCircle(Point(x, y), 5)
+            sparkle.setFill("yellow")
+            sparkle.setOutline("gold")
+            sparkle.draw(window)
+
+            # Create rays using BresenhamLine
+            for j in range(4):
+                ray_angle = angle + j * math.pi/4
+                end_x = x + 15 * math.cos(ray_angle)
+                end_y = y + 15 * math.sin(ray_angle)
+
+                ray = BresenhamLine(Point(x, y), Point(end_x, end_y))
+                ray.color = "gold"
+                ray.draw(window)
+
     def create_fireworks(self, window, num_fireworks=10):
-        """Create firework decorations for the victory screen"""
+        """Make colorful fireworks for victory screen using Bresenham lines."""
         fireworks = []
 
         for _ in range(num_fireworks):
@@ -59,14 +70,14 @@ class Effects:
             g = random.random()
             b = random.random()
 
-            # Create firework
+            # Create firework using Bresenham lines
             firework = self._create_single_firework(window, x, y, (r, g, b))
             fireworks.append(firework)
 
         return fireworks
 
     def _create_single_firework(self, window, x, y, color):
-        """Create a single firework explosion effect"""
+        """Make one firework explosion using Bresenham algorithm"""
         particles = []
         num_particles = random.randint(8, 16)
 
@@ -78,10 +89,10 @@ class Effects:
             end_x = x + length * math.cos(angle)
             end_y = y + length * math.sin(angle)
 
-            # Create line for explosion
-            line = Line(Point(x, y), Point(end_x, end_y))
-            line.setFill(color_rgb(int(color[0]*255), int(color[1]*255), int(color[2]*255)))
-            line.setWidth(2)
+            # Create line for explosion using Bresenham algorithm
+            line = BresenhamLine(Point(x, y), Point(end_x, end_y))
+            line.color = color_rgb(int(color[0]*255), int(color[1]*255), int(color[2]*255))
+            line.width = 2
             line.draw(window)
 
             particles.append(line)
@@ -89,7 +100,7 @@ class Effects:
         return particles
 
     def animate_fireworks(self, window, fireworks, duration=3):
-        """Animate fireworks by changing their colors"""
+        """Make fireworks change colors"""
         start_time = time.time()
 
         while time.time() - start_time < duration:
@@ -100,14 +111,18 @@ class Effects:
                     r = random.random()
                     g = random.random()
                     b = random.random()
-                    particle.setFill(color_rgb(int(r*255), int(g*255), int(b*255)))
+
+                    # Undraw and redraw with new color (since Bresenham lines need to be redrawn to change color)
+                    particle.undraw()
+                    particle.color = color_rgb(int(r*255), int(g*255), int(b*255))
+                    particle.draw(window)
 
             # Small delay for animation
             time.sleep(0.1)
             window.update()
 
     def coin_collect_effect(self, x, y, window):
-        """Create a sparkle effect when collecting a coin using midpoint circle algorithm"""
+        """Create sparkle effect when collecting a coin."""
         # Create particles that expand and fade
         particles = []
         num_particles = 8
@@ -125,7 +140,7 @@ class Effects:
             particles.append((particle, angle))
 
         # Animate particles
-        for size in range(5):
+        for _ in range(5):  # Loop 5 times for animation steps
             # Update particles
             for particle, angle in particles:
                 # Move outward
@@ -150,7 +165,7 @@ class Effects:
             particle.undraw()
 
     def create_ui_decoration(self, window, text, position, color="gold"):
-        """Create a decorated text with sparkles"""
+        """Make fancy text with sparkles"""
         # Create main text
         main_text = Text(position, text)
         main_text.setStyle("bold")
@@ -177,7 +192,7 @@ class Effects:
         return main_text, decorations
 
     def animate_text(self, text_obj, duration=3):
-        """Animate text with color cycling"""
+        """Make text change colors"""
         colors = ["gold", "orange", "yellow", "red", "purple", "blue"]
         start_time = time.time()
 
@@ -190,24 +205,45 @@ class Effects:
             time.sleep(0.1)
 
     def create_sparkle_effect(self, window, x, y):
-        """Create a sparkle effect at a position"""
-        sparkle = Text(Point(x, y), "✨")
-        sparkle.setSize(20)
-        sparkle.setTextColor("gold")
-        sparkle.draw(window)
+        """Make a sparkle at a position using MidpointCircle algorithm"""
+        sparkles = []
+
+        # Create a central circle
+        center_circle = MidpointCircle(Point(x, y), 5)
+        center_circle.setFill("gold")
+        center_circle.setOutline("yellow")
+        center_circle.draw(window)
+        sparkles.append(center_circle)
+
+        # Create rays using Bresenham lines
+        for i in range(8):
+            angle = 2 * math.pi * i / 8
+            end_x = x + 10 * math.cos(angle)
+            end_y = y + 10 * math.sin(angle)
+
+            ray = BresenhamLine(Point(x, y), Point(end_x, end_y))
+            ray.color = "gold"
+            ray.draw(window)
+            sparkles.append(ray)
 
         # Animate sparkle
         for i in range(5):
-            # Pulse size
-            size = 16 + i * 2
-            sparkle.setSize(size)
-
             # Pulse color
-            if i % 2 == 0:
-                sparkle.setTextColor("gold")
-            else:
-                sparkle.setTextColor("yellow")
+            color = "gold" if i % 2 == 0 else "yellow"
+
+            # Update central circle
+            center_circle.undraw()
+            center_circle.setFill(color)
+            center_circle.draw(window)
+
+            # Update rays
+            for j in range(1, len(sparkles)):
+                sparkles[j].undraw()
+                sparkles[j].color = color
+                sparkles[j].draw(window)
 
             time.sleep(0.1)
+            window.update()
 
-        return sparkle
+        # Return all sparkle elements
+        return sparkles

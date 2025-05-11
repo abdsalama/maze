@@ -18,13 +18,13 @@ class Maze:
         self.maze_array = self._create_maze()
 
     def initialize_window(self):
-        """إنشاء نافذة اللعبة"""
+        """Create the game window"""
         self.window = GraphWin(GameConfig.TITLE, self.width, self.height)
         self.window.setBackground(GameConfig.COLORS["path"])
         self._create_score_display()
 
     def _create_score_display(self):
-        """إنشاء عرض النقاط والوقت"""
+        """Create score and time display"""
         # Score display
         self.score_text = Text(Point(80, 20), f"Score: {self.score}")
         self.score_text.setStyle("bold")
@@ -38,22 +38,22 @@ class Maze:
         self.coin_counter.draw(self.window)
 
         # Time display
-        self.time_text = Text(Point(320, 20), "Time: 0s")
+        self.time_text = Text(Point(320, 20), "Time: 0 sec")
         self.time_text.setStyle("bold")
         self.time_text.setSize(12)
         self.time_text.draw(self.window)
 
     def update_display(self):
-        """تحديث عرض النقاط والوقت"""
+        """Update score and time display"""
         self.score_text.setText(f"Score: {self.score}")
         self.coin_counter.setText(f"Coins: {self.score // GameConfig.POINTS_PER_COIN}/{GameConfig.COIN_COUNT}")
         elapsed = int(time.time() - self.start_time)
-        self.time_text.setText(f"Time: {elapsed}s")
+        self.time_text.setText(f"Time: {elapsed} sec")
 
     def _create_maze(self):
-        """إنشاء متاهة عشوائية باستخدام خوارزمية Recursive Backtracking"""
+        """Create random maze using Recursive Backtracking algorithm."""
         # Calculate maze dimensions based on cell size
-        rows = (self.height - 50) // self.cell_size  # Reserve space for UI at top
+        rows = (self.height - 50) // self.cell_size
         cols = self.width // self.cell_size
 
         # Get complexity factor based on difficulty
@@ -70,9 +70,9 @@ class Maze:
             directions = [(2,0), (0,2), (-2,0), (0,-2)]
             random.shuffle(directions)
 
-            # Apply complexity factor - higher complexity means more branching paths
+
             if random.random() < complexity:
-                random.shuffle(directions)  # Extra shuffle for higher complexity
+                random.shuffle(directions)
 
             for dx, dy in directions:
                 new_x, new_y = x + dx, y + dy
@@ -113,7 +113,7 @@ class Maze:
         return maze
 
     def _add_coins(self, maze):
-        """إضافة عملات في المتاهة"""
+        """Add coins to the maze"""
         # Get coin count from config
         coin_count = GameConfig.COIN_COUNT
 
@@ -130,14 +130,14 @@ class Maze:
                 self.coins.append((x,y))
 
     def draw_maze(self):
-        """رسم المتاهة مع تأثيرات بصرية"""
+        """Draw the maze with visual effects"""
         # Clear any existing coin objects
         self.coin_objects = []
 
         for row in range(len(self.maze_array)):
             for col in range(len(self.maze_array[0])):
                 x1 = col * self.cell_size
-                y1 = row * self.cell_size + 40  # Offset for UI
+                y1 = row * self.cell_size + 40
                 x2 = x1 + self.cell_size
                 y2 = y1 + self.cell_size
 
@@ -151,7 +151,7 @@ class Maze:
                 elif cell_type == CellType.END.value:
                     cell.setFill(GameConfig.COLORS["end"])
                 elif cell_type == CellType.COIN.value:
-                    cell.setFill(GameConfig.COLORS["path"])  # Background is path color
+                    cell.setFill(GameConfig.COLORS["path"])
                     # Add yellow circle inside the cell for coin
                     self._add_coin_effect(x1, y1, x2, y2)
                 else:
@@ -161,12 +161,12 @@ class Maze:
                 cell.draw(self.window)
 
                 # Add progressive drawing effect
-                if random.random() < 0.1:  # Only add delay for some cells
+                if random.random() < 0.1:
                     time.sleep(0.01)
                     self.window.update()
 
     def _add_coin_effect(self, x1, y1, x2, y2):
-        """إضافة تأثير وميض للعملات باستخدام خوارزمية ميدبوينت"""
+        """Add shiny coin using midpoint circle algorithm."""
         # Create square background first
         square = Rectangle(Point(x1, y1), Point(x2, y2))
         square.setFill(GameConfig.COLORS["path"])
@@ -190,7 +190,7 @@ class Maze:
         return coin
 
     def collect_coin(self, x, y):
-        """جمع العملة وزيادة النقاط"""
+        """Collect coin and increase score"""
         if (x, y) in self.coins:
             self.coins.remove((x, y))
             self.maze_array[y][x] = CellType.PATH.value
@@ -200,15 +200,15 @@ class Maze:
         return False
 
     def is_game_won(self, x, y):
-        """التحقق من الفوز"""
+        """Check if player has won"""
         return self.maze_array[y][x] == CellType.END.value
 
     def get_ui_offset(self):
-        """Return the Y offset for UI elements"""
+        """Get the Y offset for UI elements"""
         return 40
 
     def animate_coins(self):
-        """Animate all coins with a pulsing effect using midpoint circle algorithm"""
+        """Animate coins with pulsing effect using sine wave."""
         for coin in self.coin_objects:
             # Skip if coin was already collected
             if not coin.canvas:
@@ -218,8 +218,8 @@ class Maze:
             current_radius = coin.getRadius()
 
             # Calculate new radius with sine wave
-            t = time.time() * 3  # Adjust speed of animation
-            scale_factor = 0.1 * math.sin(t) + 1  # Between 0.9 and 1.1
+            t = time.time() * 3
+            scale_factor = 0.1 * math.sin(t) + 1
 
             # Apply new radius
             coin.undraw()

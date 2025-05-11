@@ -1,6 +1,12 @@
 # Maze Adventure Game
 
-A 2D maze game where you control a character to navigate through a randomly generated maze, collect coins, and reach the end point.
+A 2D maze game where you control a character to navigate through a randomly generated maze, collect coins, and reach the end point. This project implements various computer graphics algorithms including Bresenham's line algorithm and Midpoint Circle algorithm.
+
+## Screenshots
+
+![Game Welcome Screen](Screenshots/Screenshot%20(1).png)
+![Gameplay](Screenshots/Screenshot%20(2).png)
+![Victory Screen](Screenshots/Screenshot%20(3).png)
 
 ## Features
 
@@ -8,7 +14,11 @@ A 2D maze game where you control a character to navigate through a randomly gene
 - Player movement with keyboard controls (arrow keys or WASD)
 - Coin collection system with score tracking
 - Timer to track completion time
-- Victory celebration with Turtle graphics
+- Victory celebration with custom graphics effects
+- Implementation of computer graphics algorithms:
+  - Bresenham's Line Algorithm for drawing lines
+  - Midpoint Circle Algorithm for drawing circles
+  - Scan-line fill algorithm for filling shapes
 - Smooth movement and visual effects
 
 ## Requirements
@@ -62,6 +72,19 @@ You can customize the game by editing the `config.py` file:
 - Modify colors
 - Change difficulty by altering maze generation parameters
 
+## Acknowledgments
+
+This project was developed as part of the Computer Graphics course at Faculty of Computers and Information.
+
+### Supervisor
+- **Dr. Heba El Hadidi** - Project supervisor and evaluator
+
+### Team Members
+- Abd-Elrahman Mohammed Salama Eltahrany
+- Osama Hamed Elkayyal
+- Fedaa Mohammed Elkanishey
+- Ahmed Elsharabasy
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.

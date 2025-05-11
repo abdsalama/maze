@@ -25,7 +25,7 @@ class Button:
             self.rect = BresenhamRectangle(Point(self.x1, self.y1), Point(self.x2, self.y2))
             self.rect.setFill("lightgray")
             self.rect.setOutline("black")
-            self.rect.setWidth(2)  # Make the border more visible
+            self.rect.setWidth(2)
         else:
             self.rect = Rectangle(Point(self.x1, self.y1), Point(self.x2, self.y2))
             self.rect.setFill("lightgray")
@@ -34,7 +34,6 @@ class Button:
         self.label = Text(center, label)
         self.label.setSize(12)
 
-        # Store whether we're using Bresenham
         self.use_bresenham = use_bresenham
 
         # Track if this button is selected
@@ -66,7 +65,7 @@ class Button:
         self.rect.setOutline(color)
 
     def setSelected(self, selected=True):
-        """Highlight the button as selected with a distinctive border"""
+        """Highlight button as selected"""
         self.is_selected = selected
 
         # Remove existing highlight if any
@@ -81,12 +80,11 @@ class Button:
             highlight_x2 = self.x2 + 3
             highlight_y2 = self.y2 + 3
 
-            # Create a visible highlight border
             self.highlight_border = Rectangle(
                 Point(highlight_x1, highlight_y1),
                 Point(highlight_x2, highlight_y2)
             )
-            self.highlight_border.setOutline("#FFD700")  # Gold color
+            self.highlight_border.setOutline("#FFD700")
             self.highlight_border.setWidth(3)
             self.highlight_border.draw(self.win)
 
@@ -106,7 +104,7 @@ def welcome_screen():
     # Welcome message
     welcome = Text(
         Point(GameConfig.WINDOW_WIDTH / 2, 170),
-        "Welcome to Maze Adventure! Navigate through the maze,\ncollect coins, and find the exit to win!",
+        "Welcome to Maze Adventure! Move through the maze,\ncollect coins, and find the exit to win!",
     )
     welcome.setSize(14)
     welcome.draw(win)
@@ -216,7 +214,7 @@ def settings_screen():
             medium_btn.setSelected(False)
             hard_btn.setSelected(False)
             GameConfig.DIFFICULTY = "easy"
-            GameConfig.CELL_SIZE = 50  # Larger cells for easy mode
+            GameConfig.CELL_SIZE = 50
             GameConfig.COIN_COUNT = 5
 
         elif medium_btn.clicked(pt):
@@ -224,7 +222,7 @@ def settings_screen():
             medium_btn.setSelected()
             hard_btn.setSelected(False)
             GameConfig.DIFFICULTY = "medium"
-            GameConfig.CELL_SIZE = 40  # Default size
+            GameConfig.CELL_SIZE = 40
             GameConfig.COIN_COUNT = 10
 
         elif hard_btn.clicked(pt):
@@ -232,7 +230,7 @@ def settings_screen():
             medium_btn.setSelected(False)
             hard_btn.setSelected()
             GameConfig.DIFFICULTY = "hard"
-            GameConfig.CELL_SIZE = 30  # Smaller cells for hard mode
+            GameConfig.CELL_SIZE = 30
             GameConfig.COIN_COUNT = 15
 
         for btn, color in color_buttons:
@@ -252,13 +250,13 @@ def settings_screen():
 def win_screen(score, elapsed_time):
     # Create win window
     win = GraphWin("You Won!", GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT)
-    win.setBackground("#E8F6F3")  # Light teal background for a fresh look
+    win.setBackground("#E8F6F3")
 
     # Win message
     win_text = Text(Point(GameConfig.WINDOW_WIDTH / 2, 100), "🎉 YOU WIN! 🎉")
     win_text.setSize(36)
     win_text.setStyle("bold")
-    win_text.setTextColor("#2E8B57")  # Sea green color
+    win_text.setTextColor("#2E8B57")
     win_text.draw(win)
 
     # Score and time display with Bresenham rectangle border
@@ -267,24 +265,24 @@ def win_screen(score, elapsed_time):
         Point(GameConfig.WINDOW_WIDTH / 2 + 200, 250),
     )
     stats_bg.setFill("white")
-    stats_bg.setOutline("#B0C4DE")  # Light steel blue border
+    stats_bg.setOutline("#B0C4DE")
     stats_bg.setWidth(2)
     stats_bg.draw(win)
 
     stats = Text(
         Point(GameConfig.WINDOW_WIDTH / 2, 200),
-        f"Score: {score} points\nTime: {elapsed_time} seconds",
+        f"Score: {score} points\nTime: {elapsed_time} secs",
     )
     stats.setSize(18)
     stats.setStyle("bold")
-    stats.setTextColor("#333333")  # Dark gray text
+    stats.setTextColor("#333333")
     stats.draw(win)
 
     # Buttons with Bresenham rectangle borders
     restart_btn = Button(
         win, Point(GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "🔄 Play Again", use_bresenham=True
     )
-    restart_btn.rect.setFill("#90EE90")  # Light green
+    restart_btn.rect.setFill("#90EE90")
     restart_btn.label.setSize(14)
     restart_btn.label.setStyle("bold")
     restart_btn.draw()
@@ -292,7 +290,7 @@ def win_screen(score, elapsed_time):
     exit_btn = Button(
         win, Point(2 * GameConfig.WINDOW_WIDTH / 3, 350), 180, 60, "❌ Exit", use_bresenham=True
     )
-    exit_btn.rect.setFill("#FF7F7F")  # Light red
+    exit_btn.rect.setFill("#FF7F7F")
     exit_btn.label.setSize(14)
     exit_btn.label.setStyle("bold")
     exit_btn.draw()
@@ -300,10 +298,10 @@ def win_screen(score, elapsed_time):
     # Footer message
     footer = Text(
         Point(GameConfig.WINDOW_WIDTH / 2, GameConfig.WINDOW_HEIGHT - 50),
-        "Thank you for playing Maze Adventure!",
+        "Thanks for playing Maze Adventure!",
     )
     footer.setSize(14)
-    footer.setTextColor("#555555")  # Medium gray
+    footer.setTextColor("#555555")
     footer.draw(win)
 
     # Wait for click
@@ -335,7 +333,7 @@ def pause_screen(maze_window):
     )
     menu_bg.setFill("white")
     menu_bg.setOutline("black")
-    menu_bg.setWidth(2)  # Make the border more visible
+    menu_bg.setWidth(2)
     menu_bg.draw(maze_window)
 
     # Title
@@ -444,7 +442,7 @@ def main():
                 "Exit",
                 use_bresenham=True
             )
-            exit_btn.rect.setFill("salmon")  # Red color for exit button
+            exit_btn.rect.setFill("salmon")
             exit_btn.draw()
 
             # Game loop
@@ -492,9 +490,7 @@ def main():
                 time.sleep(0.05)
 
                 # Animate coins
-                if (
-                    random.random() < 0.1
-                ):  # Only animate occasionally to save performance
+                if random.random() < 0.1:
                     maze.animate_coins()
 
             # Close window if not already closed
@@ -508,9 +504,5 @@ def main():
             break
 
 
-if __name__ == "__main__":
-    try:
-        main()
-    except GraphicsError:
-        # Handle graceful shutdown if window is closed
-        pass
+main()
+

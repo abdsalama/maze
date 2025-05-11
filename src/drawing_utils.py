@@ -1,21 +1,8 @@
 from graphics import *
-import math
+
 
 def draw_midpoint_circle(window, center_x, center_y, radius, fill_color, outline_color=None, width=1):
-    """
-    Draw a circle using the midpoint circle algorithm.
-
-    Args:
-        window: The GraphWin window to draw on
-        center_x, center_y: The center coordinates of the circle
-        radius: The radius of the circle
-        fill_color: The color to fill the circle with
-        outline_color: The color of the outline (if None, uses fill_color)
-        width: The width of the outline
-
-    Returns:
-        A list of all the points/pixels that make up the circle
-    """
+    """Draw circle using midpoint algorithm (efficient integer math)."""
     # If no outline color specified, use the fill color
     if outline_color is None:
         outline_color = fill_color
@@ -58,18 +45,7 @@ def draw_midpoint_circle(window, center_x, center_y, radius, fill_color, outline
     return points
 
 def plot_circle_points(window, center_x, center_y, x, y, fill_color, outline_color, width, points_list):
-    """
-    Plot points in all 8 octants of the circle.
-
-    Args:
-        window: The GraphWin window to draw on
-        center_x, center_y: The center coordinates of the circle
-        x, y: The current point relative to the center
-        fill_color: The color to fill the circle with
-        outline_color: The color of the outline
-        width: The width of the outline
-        points_list: List to store all points
-    """
+    """Plot points in all 8 octants of the circle."""
     # Plot points in all 8 octants
     plot_point(window, center_x + x, center_y + y, outline_color, width, points_list)
     plot_point(window, center_x - x, center_y + y, outline_color, width, points_list)
@@ -81,16 +57,7 @@ def plot_circle_points(window, center_x, center_y, x, y, fill_color, outline_col
     plot_point(window, center_x - y, center_y - x, outline_color, width, points_list)
 
 def plot_point(window, x, y, color, width, points_list):
-    """
-    Plot a single point on the window.
-
-    Args:
-        window: The GraphWin window to draw on
-        x, y: The coordinates of the point
-        color: The color of the point
-        width: The width of the point
-        points_list: List to store all points
-    """
+    """Draw a single pixel."""
     # Create a small rectangle to represent a pixel
     pixel = Rectangle(Point(x - width/2, y - width/2), Point(x + width/2, y + width/2))
     pixel.setFill(color)
@@ -101,36 +68,26 @@ def plot_point(window, x, y, color, width, points_list):
     points_list.append(pixel)
 
 def fill_circle(window, center_x, center_y, radius, fill_color, outline_points):
-    """
-    Fill the circle with the specified color using an optimized approach.
-
-    Args:
-        window: The GraphWin window to draw on
-        center_x, center_y: The center coordinates of the circle
-        radius: The radius of the circle
-        fill_color: The color to fill the circle with
-        outline_points: List of points that make up the outline
-    """
+    """Fill circle using scan lines."""
     # Convert to integers for range operations
     center_x_int = int(center_x)
     center_y_int = int(center_y)
     radius_int = int(radius)
 
-    # Use fewer scan lines for better performance
-    step = max(1, radius_int // 10)  # Adjust step size based on radius
+    step = max(1, radius_int // 10)
 
-    # Simple scan-line fill algorithm with optimization
+
     for y in range(center_y_int - radius_int + 1, center_y_int + radius_int, step):
         # Calculate x bounds for this y
         dy = y - center_y
         dx = int((radius**2 - dy**2)**0.5) if (radius**2 - dy**2) > 0 else 0
 
-        # Draw horizontal lines with larger rectangles for efficiency
+
         left_x = center_x_int - dx + 1
         right_x = center_x_int + dx - 1
 
         if right_x > left_x:
-            # Create a rectangle for the entire horizontal line
+
             fill_rect = Rectangle(Point(left_x, y), Point(right_x, y + step - 1))
             fill_rect.setFill(fill_color)
             fill_rect.setOutline(fill_color)
@@ -138,19 +95,10 @@ def fill_circle(window, center_x, center_y, radius, fill_color, outline_points):
             outline_points.append(fill_rect)
 
 class MidpointCircle:
-    """
-    A class to represent a circle drawn using the midpoint circle algorithm.
-    This class mimics the interface of the Circle class from graphics.py.
-    """
+    """Circle drawn using midpoint algorithm. More efficient than standard Circle."""
 
     def __init__(self, center_point, radius):
-        """
-        Initialize a new MidpointCircle.
-
-        Args:
-            center_point: A Point object representing the center of the circle
-            radius: The radius of the circle
-        """
+        """Initialize circle with center and radius."""
         self.center = center_point
         self.radius = radius
         self.fill_color = "white"
@@ -160,12 +108,7 @@ class MidpointCircle:
         self.points = []
 
     def draw(self, window):
-        """
-        Draw the circle on the window.
-
-        Args:
-            window: The GraphWin window to draw on
-        """
+        """Draw circle on window."""
         self.canvas = window
         self.points = draw_midpoint_circle(
             window,
@@ -227,19 +170,7 @@ class MidpointCircle:
 
 
 def draw_bresenham_line(window, x1, y1, x2, y2, color, width=1):
-    """
-    Draw a line using the Bresenham line algorithm.
-
-    Args:
-        window: The GraphWin window to draw on
-        x1, y1: The starting point coordinates
-        x2, y2: The ending point coordinates
-        color: The color of the line
-        width: The width of the line
-
-    Returns:
-        A list of all the points/pixels that make up the line
-    """
+    """Draw line using Bresenham algorithm (fast integer math)."""
     # Initialize list to store all points
     points = []
 
@@ -279,19 +210,7 @@ def draw_bresenham_line(window, x1, y1, x2, y2, color, width=1):
 
 
 def draw_rectangle_border(window, x1, y1, x2, y2, color, width=1):
-    """
-    Draw a rectangle border using the Bresenham line algorithm.
-
-    Args:
-        window: The GraphWin window to draw on
-        x1, y1: The top-left corner coordinates
-        x2, y2: The bottom-right corner coordinates
-        color: The color of the border
-        width: The width of the border
-
-    Returns:
-        A list of all the points/pixels that make up the rectangle border
-    """
+    """Draw rectangle border using Bresenham lines for clean edges."""
     points = []
 
     # Draw the four sides of the rectangle
@@ -304,19 +223,10 @@ def draw_rectangle_border(window, x1, y1, x2, y2, color, width=1):
 
 
 class BresenhamLine:
-    """
-    A class to represent a line drawn using the Bresenham line algorithm.
-    This class mimics the interface of the Line class from graphics.py.
-    """
+    """Line drawn using Bresenham algorithm. Better than standard Line."""
 
     def __init__(self, point1, point2):
-        """
-        Initialize a new BresenhamLine.
-
-        Args:
-            point1: A Point object representing the start point of the line
-            point2: A Point object representing the end point of the line
-        """
+        """Create a new BresenhamLine from start point to end point."""
         self.point1 = point1
         self.point2 = point2
         self.color = "black"
@@ -325,12 +235,7 @@ class BresenhamLine:
         self.points = []
 
     def draw(self, window):
-        """
-        Draw the line on the window.
-
-        Args:
-            window: The GraphWin window to draw on
-        """
+        """Draw the line on the window."""
         self.canvas = window
         self.points = draw_bresenham_line(
             window,
@@ -374,19 +279,10 @@ class BresenhamLine:
 
 
 class BresenhamRectangle:
-    """
-    A class to represent a rectangle drawn using the Bresenham line algorithm.
-    This class mimics the interface of the Rectangle class from graphics.py.
-    """
+    """Rectangle with precise edges using Bresenham algorithm."""
 
     def __init__(self, point1, point2):
-        """
-        Initialize a new BresenhamRectangle.
-
-        Args:
-            point1: A Point object representing the top-left corner of the rectangle
-            point2: A Point object representing the bottom-right corner of the rectangle
-        """
+        """Create a new BresenhamRectangle with top-left and bottom-right corners."""
         self.point1 = point1
         self.point2 = point2
         self.fill_color = None
@@ -397,12 +293,7 @@ class BresenhamRectangle:
         self.fill_rectangle = None
 
     def draw(self, window):
-        """
-        Draw the rectangle on the window.
-
-        Args:
-            window: The GraphWin window to draw on
-        """
+        """Draw the rectangle on the window."""
         self.canvas = window
 
         # Draw fill if specified
