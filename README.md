@@ -76,8 +76,9 @@ You can customize the game by editing the `config.py` file:
 
 This project was developed as part of the Computer Graphics course at Faculty of Computers and Information.
 
-### Supervisor
-- **Dr. Heba El Hadidi** - Project supervisor and evaluator
+## Acknowledgments
+
+We would like to express our sincere gratitude to **Dr. Heba El Hadidi** for her invaluable guidance, supervision, and support throughout this project. Her expertise and feedback were instrumental in the development and successful completion of this recommendation system.
 
 ### Team Members
 - Abd-Elrahman Mohammed Salama Eltahrany
