@@ -3,12 +3,14 @@
 A 2D maze game where you control a character to navigate through a randomly generated maze, collect coins, and reach the end point. This project implements various computer graphics algorithms including Bresenham's line algorithm and Midpoint Circle algorithm.
 
 ## Screenshots
+---
 
 ![Game Welcome Screen](Screenshots/Screenshot%20(1).png)
 ![Gameplay](Screenshots/Screenshot%20(2).png)
 ![Victory Screen](Screenshots/Screenshot%20(3).png)
 
 ## Features
+---
 
 - Randomly generated maze using recursive backtracking algorithm
 - Player movement with keyboard controls (arrow keys or WASD)
@@ -22,6 +24,7 @@ A 2D maze game where you control a character to navigate through a randomly gene
 - Smooth movement and visual effects
 
 ## Requirements
+---
 
 - Python 3.6 or higher
 - graphics.py
@@ -30,6 +33,7 @@ A 2D maze game where you control a character to navigate through a randomly gene
 - numpy
 
 ## Installation
+---
 
 1. Clone the repository:
    ```
@@ -43,6 +47,7 @@ A 2D maze game where you control a character to navigate through a randomly gene
    ```
 
 ## How to Play
+---
 
 1. Run the game:
    ```
@@ -56,6 +61,7 @@ A 2D maze game where you control a character to navigate through a randomly gene
    - Press Escape to exit the game
 
 ## Project Structure
+---
 
 - `src/main.py`: Main game entry point
 - `src/maze.py`: Maze generation and rendering
@@ -65,6 +71,7 @@ A 2D maze game where you control a character to navigate through a randomly gene
 - `assets/`: Game assets (if any)
 
 ## Customization
+---
 
 You can customize the game by editing the `config.py` file:
 - Change window size
@@ -73,19 +80,23 @@ You can customize the game by editing the `config.py` file:
 - Change difficulty by altering maze generation parameters
 
 ## Acknowledgments
+---
 
 This project was developed as part of the Computer Graphics course at Faculty of Computers and Information.
 
-## Acknowledgments
+### Supervisor
+---
 
-We would like to express our sincere gratitude to **Dr. Heba El Hadidi** for her invaluable guidance, supervision, and support throughout this project. Her expertise and feedback were instrumental in the development and successful completion of this recommendation system.
+- **Dr. Heba El Hadidi** - Project supervisor and evaluator
 
 ### Team Members
+---
 - Abd-Elrahman Mohammed Salama Eltahrany
 - Osama Hamed Elkayyal
 - Fedaa Mohammed Elkanishey
 - Ahmed Elsharabasy
 
 ## License
+---
 
 This project is licensed under the MIT License - see the LICENSE file for details.
