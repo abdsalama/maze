@@ -81,6 +81,7 @@ This project was developed as part of the Computer Graphics course at Faculty of
 We would like to express our sincere gratitude to **Dr. Heba El Hadidi** for her invaluable guidance, supervision, and support throughout this project. Her expertise and feedback were instrumental in the development and successful completion of this recommendation system.
 
 ### Team Members
+
 - Abd-Elrahman Mohammed Salama Eltahrany
 - Osama Hamed Elkayyal
 - Fedaa Mohammed Elkanishey
