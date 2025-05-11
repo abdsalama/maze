@@ -90,7 +90,11 @@ This project was developed as part of the Computer Graphics course at Faculty of
 - **Dr. Heba El Hadidi** - Project supervisor and evaluator
 
 ### Team Members
+<<<<<<< HEAD
 ---
+=======
+
+>>>>>>> 39daaa15852a8de265fb0828782cae3146c43605
 - Abd-Elrahman Mohammed Salama Eltahrany
 - Osama Hamed Elkayyal
 - Fedaa Mohammed Elkanishey
